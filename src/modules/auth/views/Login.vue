@@ -45,6 +45,13 @@
             <v-spacer></v-spacer>
             <v-btn :disabled="$v.$invalid" @click="submit" color="primary">{{texts.toolbar}}</v-btn>
           </v-card-actions>
+
+          <v-snackbar v-model="showSnackBar" top>
+            {{error}}
+            <v-btn color="pink" text icon @click="showSnackBar = false">
+              <v-icon>close</v-icon>
+            </v-btn>
+          </v-snackbar>
         </v-card>
       </v-flex>
     </v-layout>
@@ -52,14 +59,17 @@
 </template>
 
 <script>
-import { required, email, minLength } from 'vuelidate/lib/validators';
-import AuthService from './../services/auth-service';
+import { required, email, minLength } from 'vuelidate/lib/validators'
+import AuthService from './../services/auth-service'
+import { formatError } from '@/utils'
 
 export default {
   nome: 'Login',
   data: () => ({
+    error: undefined,
     isLogin: true,
     isLoading: false,
+    showSnackBar: false,
     user: {
       name: '',
       email: '',
@@ -148,6 +158,8 @@ export default {
         console.log('AuthService::', authData)
       } catch (error) {
         console.log(error)
+        this.error = formatError(error.message)
+        this.showSnackBar = true
       } finally {
         this.isLoading = false
       }
