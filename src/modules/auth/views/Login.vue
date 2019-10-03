@@ -5,6 +5,8 @@
         <v-card class="elevation-12">
           <v-toolbar color="primary" dark>
             <v-toolbar-title>{{texts.toolbar}}</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-progress-circular v-show="isLoading" indeterminate color="white" width="2"></v-progress-circular>
           </v-toolbar>
           <v-card-text>
             <v-form>
@@ -50,13 +52,14 @@
 </template>
 
 <script>
-import { required, email, minLength } from 'vuelidate/lib/validators'
-import AuthService from './../services/auth-service'
+import { required, email, minLength } from 'vuelidate/lib/validators';
+import AuthService from './../services/auth-service';
 
 export default {
   nome: 'Login',
   data: () => ({
     isLogin: true,
+    isLoading: false,
     user: {
       name: '',
       email: '',
@@ -136,13 +139,18 @@ export default {
     }
   },
   methods: {
-    log () {
-      console.log('Vuelidate: ', this.$v)
-    },
     async submit () {
-      console.log('User ', this.user)
-      const authData = await AuthService.login(this.user)
-      console.log('AuthData::>>>', authData)
+      this.isLoading = true
+      try {
+        const authData = this.isLogin
+          ? await AuthService.login(this.user)
+          : await AuthService.signup(this.user)
+        console.log('AuthService::', authData)
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.isLoading = false
+      }
     }
   }
 }
