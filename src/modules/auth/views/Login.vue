@@ -59,9 +59,9 @@
 </template>
 
 <script>
-import { required, email, minLength } from 'vuelidate/lib/validators'
-import AuthService from './../services/auth-service'
-import { formatError } from '@/utils'
+import { required, email, minLength } from 'vuelidate/lib/validators';
+import AuthService from './../services/auth-service';
+import { formatError } from '@/utils';
 
 export default {
   nome: 'Login',
@@ -152,10 +152,10 @@ export default {
     async submit () {
       this.isLoading = true
       try {
-        const authData = this.isLogin
+        this.isLogin
           ? await AuthService.login(this.user)
           : await AuthService.signup(this.user)
-        console.log('AuthService::', authData)
+        this.$router.push(this.$route.query.redirect || '/dashboard')
       } catch (error) {
         console.log(error)
         this.error = formatError(error.message)
